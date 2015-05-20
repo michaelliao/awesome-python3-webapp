@@ -1,0 +1,1 @@
+sample nginx configuration file

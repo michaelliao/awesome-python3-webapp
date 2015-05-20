@@ -1,0 +1,97 @@
+{% extends '__base__.html' %}
+
+{% block title %}评论{% endblock %}
+
+{% block beforehead %}
+
+<script>
+
+function initVM(data) {
+    $('#vm').show();
+    var vm = new Vue({
+        el: '#vm',
+        data: {
+            comments: data.comments,
+            page: data.page
+        },
+        methods: {
+            delete_comment: function (comment) {
+                var content = comment.content.length > 20 ? comment.content.substring(0, 20) + '...' : comment.content;
+                if (confirm('确认要删除评论“' + comment.content + '”？删除后不可恢复！')) {
+                    postJSON('/api/comments/' + comment.id + '/delete', function (err, r) {
+                        if (err) {
+                            return error(err);
+                        }
+                        refresh();
+                    });
+                }
+            }
+        }
+    });
+}
+
+$(function() {
+    getJSON('/api/comments', {
+        page: {{ page_index }}
+    }, function (err, results) {
+        if (err) {
+            return fatal(err);
+        }
+        $('#loading').hide();
+        initVM(results);
+    });
+});
+
+</script>
+
+{% endblock %}
+
+{% block content %}
+
+    <div class="uk-width-1-1 uk-margin-bottom">
+        <div class="uk-panel uk-panel-box">
+            <ul class="uk-breadcrumb">
+                <li class="uk-active"><span>评论</span></li>
+                <li><a href="/manage/blogs">日志</a></li>
+                <li><a href="/manage/users">用户</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="error" class="uk-width-1-1">
+    </div>
+
+    <div id="loading" class="uk-width-1-1 uk-text-center">
+        <span><i class="uk-icon-spinner uk-icon-medium uk-icon-spin"></i> 正在加载...</span>
+    </div>
+
+    <div id="vm" class="uk-width-1-1" style="display:none">
+        <table class="uk-table uk-table-hover">
+            <thead>
+                <tr>
+                    <th class="uk-width-2-10">作者</th>
+                    <th class="uk-width-5-10">内容</th>
+                    <th class="uk-width-2-10">创建时间</th>
+                    <th class="uk-width-1-10">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-repeat="comment: comments" >
+                    <td>
+                        <span v-text="comment.user_name"></span>
+                    </td>
+                    <td>
+                        <span v-text="comment.content"></span>
+                    </td>
+                    <td>
+                        <span v-text="comment.created_at.toDateTime()"></span>
+                    </td>
+                    <td>
+                        <a href="#0" v-on="click: delete_comment(comment)"><i class="uk-icon-trash-o"></i>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div v-component="pagination" v-with="page"></div>
+    </div>
+{% endblock %}

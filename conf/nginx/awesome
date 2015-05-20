@@ -1,0 +1,33 @@
+server {
+    listen      80;
+
+    root       /srv/awesome/www;
+    access_log /srv/awesome/log/access_log;
+    error_log  /srv/awesome/log/error_log;
+
+    # server_name awesome.liaoxuefeng.com;
+
+    client_max_body_size 1m;
+
+    gzip            on;
+    gzip_min_length 1024;
+    gzip_buffers    4 8k;
+    gzip_types      text/css application/x-javascript application/json;
+
+    sendfile on;
+
+    location /favicon.ico {
+        root /srv/awesome/www;
+    }
+
+    location ~ ^\/static\/.*$ {
+        root /srv/awesome/www;
+    }
+
+    location / {
+        proxy_pass       http://127.0.0.1:9000;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}

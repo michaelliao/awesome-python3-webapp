@@ -1,0 +1,73 @@
+<html>
+<head>
+<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=no;" />
+<style>
+img,video {
+  max-width:100%;
+}
+
+body {
+  overflow-x: hidden;
+  margin: 12px;
+  font-family: "Helvetica Neue";
+  font-size: 17px;
+  line-height: 30px;
+  color: #333333;
+  background-color: #ffffff;
+}
+
+p {
+  word-wrap: break-word;
+}
+
+pre {
+  display: block;
+  padding: 9.5px;
+  margin: 0 0 10px;
+  font-size: 13px;
+  line-height: 20px;
+  word-break: break-all;
+  word-wrap: break-word;
+  white-space: pre;
+  white-space: pre-wrap;
+  background-color: #f5f5f5;
+  border: 1px solid #ccc;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+}
+
+pre code {
+  padding: 0;
+  color: inherit;
+  white-space: pre;
+  white-space: pre-wrap;
+  background-color: transparent;
+  border: 0;
+}
+
+#container {
+  max-width:100%;
+}
+
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function (event) {
+  var max_width, videos, i, v, s, src, w, h, r;
+  max_width = document.querySelector('#container').offsetWidth;
+  videos = document.querySelectorAll('div.html5-video');
+  for (i = 0; i < videos.length; i++) {
+    v = videos[i];
+    src = v.getAttribute('data-src');
+    w = v.getAttribute('data-width');
+    h = v.getAttribute('data-height');
+    r = max_width * parseInt(h, 10) / parseInt(w, 10);
+    s = '<video width="100%" height="' + r + 'px" controls="controls" preload="none" autoplay="autoplay" style="border:solid 1px #ccc"><source src="' + src + '" /></video>';
+    v.innerHTML = s;
+  }
+});
+</script>
+</head>
+<body>
+<div id="container">
