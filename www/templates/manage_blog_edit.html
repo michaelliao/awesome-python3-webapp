@@ -23,7 +23,7 @@ function initVM(blog) {
                         $form.showFormError(err);
                     }
                     else {
-                        return location.assign('/manage/blogs');
+                        return location.assign('/api/blogs/' + r.id);
                     }
                 });
             }
