@@ -1,1 +1,0 @@
-sample supervisor configuration file
