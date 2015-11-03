@@ -14,13 +14,13 @@ from datetime import datetime
 
 from aiohttp import web
 
-import orm
+def index(request):
+    return web.Response(body=b'<h1>Awesome</h1>')
 
-@asyncio.coroutine
-def init(loop):
-    yield from orm.create_pool(loop=loop, host='127.0.0.1', port=3306, user='www', password='www', db='awesome')
+async def init(loop):
     app = web.Application(loop=loop)
-    srv = yield from loop.create_server(app.make_handler(), '127.0.0.1', 9000)
+    app.router.add_route('GET', '/', index)
+    srv = await loop.create_server(app.make_handler(), '127.0.0.1', 9000)
     logging.info('server started at http://127.0.0.1:9000...')
     return srv
 
