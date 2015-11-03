@@ -29,27 +29,25 @@ async def create_pool(loop, **kw):
 async def select(sql, args, size=None):
     log(sql, args)
     global __pool
-    with (await __pool) as conn:
-        cur = await conn.cursor(aiomysql.DictCursor)
-        await cur.execute(sql.replace('?', '%s'), args or ())
-        if size:
-            rs = await cur.fetchmany(size)
-        else:
-            rs = await cur.fetchall()
-        await cur.close()
+    async with __pool.get() as conn:
+        async with conn.cursor(aiomysql.DictCursor) as cur:
+            await cur.execute(sql.replace('?', '%s'), args or ())
+            if size:
+                rs = await cur.fetchmany(size)
+            else:
+                rs = await cur.fetchall()
         logging.info('rows returned: %s' % len(rs))
         return rs
 
 async def execute(sql, args, autocommit=True):
     log(sql)
-    with (await __pool) as conn:
+    async with __pool.get() as conn:
         if not autocommit:
             await conn.begin()
         try:
-            cur = await conn.cursor()
-            await cur.execute(sql.replace('?', '%s'), args)
-            affected = cur.rowcount
-            await cur.close()
+            async with conn.cursor(aiomysql.DictCursor) as cur:
+                await cur.execute(sql.replace('?', '%s'), args)
+                affected = cur.rowcount
             if not autocommit:
                 await conn.commit()
         except BaseException as e:
