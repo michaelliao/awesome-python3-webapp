@@ -57,10 +57,7 @@ async def execute(sql, args, autocommit=True):
         return affected
 
 def create_args_string(num):
-    L = []
-    for n in range(num):
-        L.append('?')
-    return ', '.join(L)
+    return ', '.join(['?' for i in range(num)])
 
 class Field(object):
 
