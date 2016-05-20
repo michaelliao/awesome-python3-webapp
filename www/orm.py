@@ -100,7 +100,7 @@ class ModelMetaclass(type):
         tableName = attrs.get('__table__', name)
         logging.info('found model: %s (table: %s)' % (name, tableName))
         mappings = dict()
-        fields = []
+        escaped_fields = []
         primaryKey = None
         for k, v in attrs.copy().items():
             if isinstance(v, Field):
@@ -112,18 +112,17 @@ class ModelMetaclass(type):
                         raise StandardError('Duplicate primary key for field: %s' % k)
                     primaryKey = k
                 else:
-                    fields.append(k)
+                    escaped_fields.append(k)
         if not primaryKey:
             raise StandardError('Primary key not found.')
 
-        escaped_fields = list(map(lambda f: '`%s`' % f, fields))
         attrs['__mappings__'] = mappings # 保存属性和列的映射关系
         attrs['__table__'] = tableName
         attrs['__primary_key__'] = primaryKey # 主键属性名
-        attrs['__fields__'] = fields # 除主键外的属性名
+        attrs['__fields__'] = escaped_fields + [primaryKey] # 全部属性名，主键一定在是最后
         attrs['__select__'] = 'select * from `%s`' % (tableName)
-        attrs['__insert__'] = 'insert into `%s` (%s, `%s`) values (%s)' % (tableName, ', '.join(escaped_fields), primaryKey, ', '.join('?' * len(mappings)))
-        attrs['__update__'] = 'update `%s` set %s where `%s`=?' % (tableName, ', '.join(map(lambda f: '`%s`=?' % (mappings.get(f).name or f), fields)), primaryKey)
+        attrs['__insert__'] = 'insert into `%s` (%s) values (%s)' % (tableName, ', '.join('`%s`' % f for f in attrs['__fields__']), ', '.join('?' * len(mappings)))
+        attrs['__update__'] = 'update `%s` set %s where `%s`=?' % (tableName, ', '.join('`%s`=?' % f for f in escaped_fields), primaryKey)
         attrs['__delete__'] = 'delete from `%s` where `%s`=?' % (tableName, primaryKey)
         return type.__new__(cls, name, bases, attrs)
 
@@ -203,14 +202,12 @@ class Model(dict, metaclass=ModelMetaclass):
 
     async def save(self):
         args = list(map(self.getValueOrDefault, self.__fields__))
-        args.append(self.getValueOrDefault(self.__primary_key__))
         rows = await execute(self.__insert__, args)
         if rows != 1:
             logging.warn('failed to insert record: affected rows: %s' % rows)
 
     async def update(self):
         args = list(map(self.getValue, self.__fields__))
-        args.append(self.getValue(self.__primary_key__))
         rows = await execute(self.__update__, args)
         if rows != 1:
             logging.warn('failed to update by primary key: affected rows: %s' % rows)
