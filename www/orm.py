@@ -97,15 +97,15 @@ class ModelMetaclass(type):
     def __new__(cls, name, bases, attrs):
         if name=='Model':
             return type.__new__(cls, name, bases, attrs)
-        tableName = attrs.get('__table__', None) or name
+        tableName = attrs.get('__table__', name)
         logging.info('found model: %s (table: %s)' % (name, tableName))
         mappings = dict()
         fields = []
         primaryKey = None
-        for k, v in attrs.items():
+        for k, v in attrs.copy().items():
             if isinstance(v, Field):
                 logging.info('  found mapping: %s ==> %s' % (k, v))
-                mappings[k] = v
+                mappings[k] = attrs.pop(k)
                 if v.primary_key:
                     # 找到主键:
                     if primaryKey:
@@ -115,8 +115,7 @@ class ModelMetaclass(type):
                     fields.append(k)
         if not primaryKey:
             raise StandardError('Primary key not found.')
-        for k in mappings.keys():
-            attrs.pop(k)
+
         escaped_fields = list(map(lambda f: '`%s`' % f, fields))
         attrs['__mappings__'] = mappings # 保存属性和列的映射关系
         attrs['__table__'] = tableName
