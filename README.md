@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # awesome-python3-webapp
 
 小白的Python入门教程实战篇：网站+iOS App源码
@@ -22,3 +23,9 @@
 * [Day 14](https://github.com/michaelliao/awesome-python3-webapp/tree/day-14)
 * [Day 15](https://github.com/michaelliao/awesome-python3-webapp/tree/day-15)
 * [Day 16](https://github.com/michaelliao/awesome-python3-webapp/tree/day-16)
+=======
+awesome-python3-webapp
+======================
+
+A python webapp tutorial.
+>>>>>>> b06410520287b9b4a57ec024fedf35c8e401d7aa
