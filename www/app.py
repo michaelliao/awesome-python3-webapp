@@ -15,12 +15,8 @@ from datetime import datetime
 from aiohttp import web
 
 def index(request):
-<<<<<<< HEAD
 	# 在这里解决了编码的问题
     return web.Response(body=b'<h1>Awesome</h1>', content_type='text/html', charset='UTF-8')
-=======
-    return web.Response(body=b'<h1>Awesome</h1>')
->>>>>>> b06410520287b9b4a57ec024fedf35c8e401d7aa
 
 async def init(loop):
     app = web.Application(loop=loop)
