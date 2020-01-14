@@ -26,7 +26,9 @@ def index(request):
 
 @get('/api/users')
 def api_get_users():
-    users = yield from User.findAll(orderBy='created_at desc')
+    #users = yield from User.findAll(orderBy='created_at desc')
+     #在第八天的时候一定要改了这行代码，用await替换yield from.
+    users = await User.findAll(orderBy='created_at desc')
     for u in users:
         u.passwd = '******'
     return dict(users=users)
