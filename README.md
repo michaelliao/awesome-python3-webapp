@@ -22,3 +22,5 @@
 * [Day 14](https://github.com/michaelliao/awesome-python3-webapp/tree/day-14)
 * [Day 15](https://github.com/michaelliao/awesome-python3-webapp/tree/day-15)
 * [Day 16](https://github.com/michaelliao/awesome-python3-webapp/tree/day-16)
+
+[Python 教程](https://www.scaler.com/topics/python/) |学习 Python 编程
