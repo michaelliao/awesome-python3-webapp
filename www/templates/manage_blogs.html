@@ -35,7 +35,8 @@ function initVM(data) {
 $(function() {
     getJSON('/api/blogs', {
         page: {{ page_index }}
-    }, function (err, results) {
+    },
+    function(err, results) {
         if (err) {
             return fatal(err);
         }
